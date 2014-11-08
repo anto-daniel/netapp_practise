@@ -4,6 +4,7 @@ use CGI;
 @aggr = qx/sshpass -p admin123 ssh -o StrictHostKeyChecking=no root\@192.168.1.7 df -Ah |grep -v .snap |sed -e '1d' |awk '{print \$1"\tData Utilized:\t\t"\$5}'/;
 @vol = qx/sshpass -p admin123 ssh -o StrictHostKeyChecking=no root\@192.168.1.7 df -h |grep -v .snap |sed -e '1d' |awk '{print \$1"\tData Utilized:\t\t"\$5}'/;
 @ifcfg = qx/sshpass -p admin123 ssh -o StrictHostKeyChecking=no root\@192.168.1.7 ifconfig -a/;
+@lunsho = qx/sshpass -p admin123 ssh -o StrictHostKeyChecking=no root\@192.168.1.7 lun show -v/;
 print "Content-type: text/html\n\r\n";
 print "<img src=/images/isanlogo.png></br>";
 print "<hr color=\"blue\" size=\"3px\">";
@@ -72,19 +73,37 @@ while(($key,$value) = each (%hash))
         print "<li>Interface:$key  -> IP Address:$value</li>";
 }
 print "</ul>";
-
-
-
-
-
-
-
-
-
-
-
-
+@lunsho1 = grep(/\/vol\//,@lunsho);
+foreach $i1 (@lunsho1)
+{
+	@lsarr = split(/\s+/,$i1);
+	$lpath = $lsarr[1];
+	$lsize = $lsarr[2];
+	$lstatus = $lsarr[5];
+	chop($lstatus);
+	$dummy = qx/sshpass -p admin123 ssh -o StrictHostKeyChecking=no root\@192.168.1.7 lun show -m $lpath/;
+	if ($dummy =~ m/not/)
+	{
+	   $mstring = "lun has no mapping";
+	}
+	else
+	{
+	@dummy1 = split(/\s+/, $dummy);
+	$mstring = $dummy1[1];
+	}
+	$final_string = "LunPath:".$lpath."--->  "."LunSize:".$lsize."--->  "."LunStatus:".$lstatus."---> "."client:".$mstring;
+	push @key1arr,$final_string;
+}
+print "<b><u><font color = \"blue\">Block Details:</font></u></b>\n";
+print "<ul>";
+foreach $ixy (@key1arr)
+{
+	print "<li>$ixy</li>";
+}
+print "</ul>";
 ###space for Bottom page###
+@warn = qx/sshpass -p admin123 ssh -o StrictHostKeyChecking=no root\@192.168.1.7 rdfile \/etc\/messages.0  /;
+@notice = qx/sshpass -p admin123 ssh -o StrictHostKeyChecking=no root\@192.168.1.7 rdfile \/etc\/messages.0  | egrep -i ':notice'/;
 #print "<head>";
 print "<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>";
 #print "<style>";
@@ -102,7 +121,7 @@ print "<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>";
 #<body>
 #
 #print "<ul>";
-print " <center> <a href=\"/cgi-bin/warning.pl\">Warning</a>";
-print "  <a href=\"/cgi-bin/notice.pl\">Notice</a> </center>";
+print " <center> <a href=\"/cgi-bin/warning.pl\">Warning<font color=red>[$#warn]</font></a>";
+print "  <a href=\"/cgi-bin/notice.pl\">Notice<font color=red>[$#notice]</font></a> </center>";
 #print "</ul>";
 
