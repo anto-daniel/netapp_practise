@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 use CGI;
-@version = qx/sshpass -p admin123 ssh -o StrictHostKeyChecking=no root\@192.168.1.7 sysconfig -a/;
-@aggr = qx/sshpass -p admin123 ssh -o StrictHostKeyChecking=no root\@192.168.1.7 df -Ah |grep -v .snap |sed -e '1d' |awk '{print \$1"\tData Utilized:\t\t"\$5}'/;
-@vol = qx/sshpass -p admin123 ssh -o StrictHostKeyChecking=no root\@192.168.1.7 df -h |grep -v .snap |sed -e '1d' |awk '{print \$1"\tData Utilized:\t\t"\$5}'/;
-@ifcfg = qx/sshpass -p admin123 ssh -o StrictHostKeyChecking=no root\@192.168.1.7 ifconfig -a/;
+@version = qx/sshpass -p xxxxx ssh -o StrictHostKeyChecking=no root\@192.168.1.7 sysconfig -a/;
+@aggr = qx/sshpass -p xxxxx ssh -o StrictHostKeyChecking=no root\@192.168.1.7 df -Ah |grep -v .snap |sed -e '1d' |awk '{print \$1"\tData Utilized:\t\t"\$5}'/;
+@vol = qx/sshpass -p xxxxx ssh -o StrictHostKeyChecking=no root\@192.168.1.7 df -h |grep -v .snap |sed -e '1d' |awk '{print \$1"\tData Utilized:\t\t"\$5}'/;
+@ifcfg = qx/sshpass -p xxxxx ssh -o StrictHostKeyChecking=no root\@192.168.1.7 ifconfig -a/;
 print "Content-type: text/html\n\r\n";
 print "<img src=/images/isanlogo.png></br>";
 print "<hr color=\"blue\" size=\"3px\">";
